@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 
 const FormInput = ({ field, fieldState, formState, label, desc, ...props }) => (
   <FormItem>
-    <FormLabel>{label}</FormLabel>
+    {label && <FormLabel>{label}</FormLabel>}
     <FormControl>
       <Input placeholder="shadcn" {...field} {...props} />
     </FormControl>

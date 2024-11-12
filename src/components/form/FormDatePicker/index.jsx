@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 
-const FormDatePicker = ({ field, label, desc, placeholder }) => (
+const FormDatePicker = ({ field, label, desc, placeholder, ...props }) => (
   <FormItem className="flex flex-col">
     <FormLabel>{label}</FormLabel>
     <Popover>
@@ -25,7 +25,7 @@ const FormDatePicker = ({ field, label, desc, placeholder }) => (
           <Button
             variant={"outline"}
             className={cn(
-              "w-[240px] pl-3 text-left font-normal",
+              "text-left font-normal",
               !field.value && "text-muted-foreground"
             )}
           >
@@ -43,10 +43,8 @@ const FormDatePicker = ({ field, label, desc, placeholder }) => (
           mode="single"
           selected={field.value}
           onSelect={field.onChange}
-          disabled={(date) =>
-            date > new Date() || date < new Date("1900-01-01")
-          }
           initialFocus
+          {...props}
         />
       </PopoverContent>
     </Popover>

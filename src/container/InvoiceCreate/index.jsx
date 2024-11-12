@@ -1,40 +1,90 @@
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import FormInput from "@/components/form/FormInput";
 import FormSelect from "@/components/form/FormSelect";
 import FormDatePicker from "@/components/form/FormDatePicker";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Trash } from "lucide-react";
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  billFrom: z.object({
+    address: z.object({
+      street: z.string().min(1, "Street is required"),
+      city: z.string().min(1, "City is required"),
+      postCode: z.string().min(1, "Post Code is required"),
+      country: z.string().min(1, "Country is required"),
+    }),
   }),
-  password: z.string().min(6, { message: "" }).max(16, { message: "" }),
-  email: z.string().email({ message: "select valid data" }),
-  birthDate: z.date(),
+  billTo: z.object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email format").min(1, "Email is required"),
+    address: z.object({
+      street: z.string().min(1, "Street is required"),
+      city: z.string().min(1, "City is required"),
+      postCode: z.string().min(1, "Post Code is required"),
+      country: z.string().min(1, "Country is required"),
+    }),
+  }),
+  invoiceDate: z.string().min(1, "Invoice Date is required"),
+  paymentTerms: z.string().min(1, "Payment Terms are required"),
+  projectDescription: z.string().optional(),
+  itemList: z
+    .array(
+      z.object({
+        itemName: z.string().min(1, "Item Name is required"),
+        quantity: z.number().min(1, "Quantity must be at least 1"),
+        price: z.number().min(0, "Price must be at least 0"),
+      })
+    )
+    .optional(),
 });
 
 const InvoiceCreate = () => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: "",
-      password: "",
-      email: "",
-      birthDate: "",
+      billFrom: {
+        address: {
+          street: "",
+          city: "",
+          postCode: "",
+          country: "",
+        },
+      },
+      billTo: {
+        name: "",
+        email: "",
+        address: {
+          street: "",
+          city: "",
+          postCode: "",
+          country: "",
+        },
+      },
+      invoiceDate: "",
+      paymentTerms: "",
+      projectDescription: "",
+      itemList: [],
     },
   });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "itemList",
+  });
+
+  const { itemList } = form.watch();
 
   function onSubmit(data) {
     console.log(data);
@@ -42,10 +92,46 @@ const InvoiceCreate = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+      >
         <FormField
           control={form.control}
-          name="username"
+          name="billFrom.address.street"
+          render={(props) => (
+            <FormInput
+              label="Username"
+              placeholder="Enter Username"
+              {...props}
+            />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="billFrom.address.city"
+          render={(props) => (
+            <FormInput
+              label="Username"
+              placeholder="Enter Username"
+              {...props}
+            />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="billFrom.address.street"
+          render={(props) => (
+            <FormInput
+              label="Username"
+              placeholder="Enter Username"
+              {...props}
+            />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="billFrom.address.postCode"
           render={(props) => (
             <FormInput
               label="Username"
@@ -88,10 +174,94 @@ const InvoiceCreate = () => {
             <FormDatePicker
               label="Birth Date"
               placeholder="Select Your Birthdate"
+              disabled={(date) => date > new Date()}
               {...props}
             />
           )}
         />
+        <FormField
+          control={form.control}
+          name="joiningDate"
+          render={(props) => (
+            <FormDatePicker
+              label="Joining Date"
+              placeholder="Select Your Joining Date"
+              disabled={(date) => date < new Date()}
+              {...props}
+            />
+          )}
+        />
+        <Table>
+          {fields.length > 0 && (
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item Name</TableHead>
+                <TableHead className="w-[100px]">Qty.</TableHead>
+                <TableHead className="w-[100px]">Price</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+                <TableHead className="text-right"></TableHead>
+              </TableRow>
+            </TableHeader>
+          )}
+          <TableBody>
+            {fields.map((item, index) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-medium">
+                  <FormField
+                    control={form.control}
+                    name={`itemList.${index}.itemName`}
+                    render={(props) => (
+                      <FormInput placeholder="Enter Item Name" {...props} />
+                    )}
+                  />
+                </TableCell>
+                <TableCell>
+                  <FormField
+                    control={form.control}
+                    name={`itemList.${index}.quantity`}
+                    render={(props) => (
+                      <FormInput placeholder="Qty." type="number" {...props} />
+                    )}
+                  />
+                </TableCell>
+                <TableCell>
+                  <FormField
+                    control={form.control}
+                    name={`itemList.${index}.price`}
+                    render={(props) => (
+                      <FormInput placeholder="Price" type="number" {...props} />
+                    )}
+                  />
+                </TableCell>
+                <TableCell className="text-right">
+                  {(itemList[index]?.quantity || 0) *
+                    (itemList[index].price || 0)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button variant="ghost" onClick={() => remove(index)}>
+                    <Trash />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={5}>
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={() => {
+                    append({ itemName: "", quantity: "", price: "" });
+                  }}
+                >
+                  Add New Item
+                </Button>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+
         <Button type="submit">Submit</Button>
       </form>
     </Form>
