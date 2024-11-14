@@ -36,21 +36,30 @@ const FormSchema = z.object({
       country: z.string().min(1, "Country is required"),
     }),
   }),
-  invoiceDate: z.string().min(1, "Invoice Date is required"),
+  invoiceDate: z.date().refine((date) => date >= new Date(), {
+    message: "Invoice Date must be today or later",
+  }),
   paymentTerms: z.string().min(1, "Payment Terms are required"),
   projectDescription: z.string().optional(),
   itemList: z
     .array(
       z.object({
         itemName: z.string().min(1, "Item Name is required"),
-        quantity: z.number().min(1, "Quantity must be at least 1"),
-        price: z.number().min(0, "Price must be at least 0"),
+        quantity: z.preprocess((val) => {
+          const num = Number(val);
+          return isNaN(num) ? undefined : num;
+        }, z.number().min(1, "Quantity must be at least 1")),
+        price: z.preprocess((val) => {
+          const num = Number(val);
+          return isNaN(num) ? undefined : num;
+        }, z.number().min(0, "Quantity must be at least 0")),
       })
     )
     .optional(),
+  status: z.enum(["pending", "paid", "partially paid"]),
 });
 
-const InvoiceCreate = () => {
+const InvoiceCreate = ({ toggleSheet }) => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -76,6 +85,7 @@ const InvoiceCreate = () => {
       paymentTerms: "",
       projectDescription: "",
       itemList: [],
+      status: "pending",
     },
   });
 
@@ -86,9 +96,24 @@ const InvoiceCreate = () => {
 
   const { itemList } = form.watch();
 
-  function onSubmit(data) {
-    console.log(data);
-  }
+  const onSubmit = async (data) => {
+    try {
+      const res = await fetch("http://localhost:3000/invoices", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+      const json = await res.json();
+      console.log(json);
+      toggleSheet();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  console.log(form.formState.errors);
 
   return (
     <Form {...form}>
@@ -100,33 +125,14 @@ const InvoiceCreate = () => {
           control={form.control}
           name="billFrom.address.street"
           render={(props) => (
-            <FormInput
-              label="Username"
-              placeholder="Enter Username"
-              {...props}
-            />
+            <FormInput label="Street" placeholder="Enter Street" {...props} />
           )}
         />
         <FormField
           control={form.control}
           name="billFrom.address.city"
           render={(props) => (
-            <FormInput
-              label="Username"
-              placeholder="Enter Username"
-              {...props}
-            />
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="billFrom.address.street"
-          render={(props) => (
-            <FormInput
-              label="Username"
-              placeholder="Enter Username"
-              {...props}
-            />
+            <FormInput label="City" placeholder="Enter City" {...props} />
           )}
         />
         <FormField
@@ -134,30 +140,84 @@ const InvoiceCreate = () => {
           name="billFrom.address.postCode"
           render={(props) => (
             <FormInput
-              label="Username"
-              placeholder="Enter Username"
+              label="PostCode"
+              placeholder="Enter PostCode"
               {...props}
             />
           )}
         />
         <FormField
           control={form.control}
-          name="password"
+          name="billFrom.address.country"
+          render={(props) => (
+            <FormInput label="Country" placeholder="Enter Country" {...props} />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="billTo.name"
+          render={(props) => (
+            <FormInput label="Name" placeholder="Enter Name" {...props} />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="billTo.email"
+          render={(props) => (
+            <FormInput label="Email" placeholder="Enter Email" {...props} />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="billTo.address.street"
+          render={(props) => (
+            <FormInput label="Street" placeholder="Enter Street" {...props} />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="billTo.address.city"
+          render={(props) => (
+            <FormInput label="City" placeholder="Enter City" {...props} />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="billTo.address.postCode"
           render={(props) => (
             <FormInput
-              label="Password"
-              placeholder="Enter Password"
+              label="PostCode"
+              placeholder="Enter PostCode"
               {...props}
             />
           )}
         />
         <FormField
           control={form.control}
-          name="email"
+          name="billTo.address.country"
+          render={(props) => (
+            <FormInput label="Country" placeholder="Enter Country" {...props} />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="invoiceDate"
+          render={(props) => (
+            <FormDatePicker
+              label="Invoice Date"
+              placeholder="Select Invoice Date"
+              disabled={(date) => date <= new Date()}
+              {...props}
+            />
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="paymentTerms"
           render={(props) => (
             <FormSelect
               label="Email"
-              placeholder="Enter Password"
+              placeholder="Select Payment Terms"
               options={[
                 { value: "a@example.com", text: "a@example.com" },
                 { value: "b@example.com", text: "b@example.com" },
@@ -169,24 +229,11 @@ const InvoiceCreate = () => {
         />
         <FormField
           control={form.control}
-          name="birthDate"
+          name="projectDescription"
           render={(props) => (
-            <FormDatePicker
-              label="Birth Date"
-              placeholder="Select Your Birthdate"
-              disabled={(date) => date > new Date()}
-              {...props}
-            />
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="joiningDate"
-          render={(props) => (
-            <FormDatePicker
-              label="Joining Date"
-              placeholder="Select Your Joining Date"
-              disabled={(date) => date < new Date()}
+            <FormInput
+              label="Project Description"
+              placeholder="Enter Project Description"
               {...props}
             />
           )}
@@ -219,6 +266,7 @@ const InvoiceCreate = () => {
                   <FormField
                     control={form.control}
                     name={`itemList.${index}.quantity`}
+                    rules={{ valueAsNumber: true }}
                     render={(props) => (
                       <FormInput placeholder="Qty." type="number" {...props} />
                     )}

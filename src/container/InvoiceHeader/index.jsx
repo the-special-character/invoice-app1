@@ -22,8 +22,14 @@ import {
 } from "@/components/ui/sheet";
 import { Mail } from "lucide-react";
 import InvoiceCreate from "../InvoiceCreate";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from "react";
 
 const InvoiceHeader = () => {
+  const [openSheet, setOpenSheet] = useState(false);
+
+  const toggleSheet = () => setOpenSheet((val) => !val);
+
   return (
     <div className="flex justify-between container mx-auto items-center">
       <div>
@@ -47,26 +53,30 @@ const InvoiceHeader = () => {
           </SelectContent>
         </Select>
 
-        <Sheet>
+        <Sheet open={openSheet} onOpenChange={toggleSheet}>
           <SheetTrigger asChild>
             <Button>
               <Mail /> New Invoice
             </Button>
           </SheetTrigger>
-          <SheetContent className="!max-w-2xl">
-            <SheetHeader>
-              <SheetTitle>Edit profile</SheetTitle>
-              <SheetDescription>
-                Make changes to your profile here. Click save when you're done.
-              </SheetDescription>
-            </SheetHeader>
-            <InvoiceCreate />
+          <SheetContent className="!max-w-2xl p-0">
+            <ScrollArea className="w-full h-full p-6">
+              <SheetHeader>
+                <SheetTitle>Edit profile</SheetTitle>
+                <SheetDescription>
+                  Make changes to your profile here. Click save when you're
+                  done.
+                </SheetDescription>
+              </SheetHeader>
 
-            {/* <SheetFooter>
+              <InvoiceCreate toggleSheet={toggleSheet} />
+
+              {/* <SheetFooter>
               <SheetClose asChild>
                 <Button type="submit">Save changes</Button>
               </SheetClose>
             </SheetFooter> */}
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>

@@ -1,3 +1,40 @@
 {
-  "invoices": []
+  "invoices": [
+    {
+      "id": "1a75",
+      "billFrom": {
+        "address": {
+          "street": "aasdf",
+          "city": "asdfads",
+          "postCode": "asdfasdf",
+          "country": "asdfadsf"
+        }
+      },
+      "billTo": {
+        "name": "asdfasd",
+        "email": "asdfasdf@gmail.com",
+        "address": {
+          "street": "asdfs",
+          "city": "adsfas",
+          "postCode": "asdfasdf",
+          "country": "asdfasdf"
+        }
+      },
+      "invoiceDate": "2024-11-21T18:30:00.000Z",
+      "paymentTerms": "b@example.com",
+      "projectDescription": "asdfadsfa",
+      "itemList": [
+        {
+          "itemName": "sdasdfads",
+          "quantity": 1,
+          "price": 10
+        },
+        {
+          "itemName": "131232131",
+          "quantity": 2,
+          "price": 10
+        }
+      ]
+    }
+  ]
 }
