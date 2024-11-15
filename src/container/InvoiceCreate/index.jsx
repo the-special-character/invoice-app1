@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Trash } from "lucide-react";
+import { useInvoice } from "@/context/invoiceContext";
 
 const FormSchema = z.object({
   billFrom: z.object({
@@ -59,7 +60,7 @@ const FormSchema = z.object({
   status: z.enum(["pending", "paid", "partially paid"]),
 });
 
-const InvoiceCreate = ({ toggleSheet }) => {
+const InvoiceCreate = () => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -88,6 +89,7 @@ const InvoiceCreate = ({ toggleSheet }) => {
       status: "pending",
     },
   });
+  const { createInvoice } = useInvoice();
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -96,29 +98,12 @@ const InvoiceCreate = ({ toggleSheet }) => {
 
   const { itemList } = form.watch();
 
-  const onSubmit = async (data) => {
-    try {
-      const res = await fetch("http://localhost:3000/invoices", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
-      const json = await res.json();
-      console.log(json);
-      toggleSheet();
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   console.log(form.formState.errors);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(createInvoice)}
         className="flex flex-col gap-4"
       >
         <FormField
@@ -216,12 +201,12 @@ const InvoiceCreate = ({ toggleSheet }) => {
           name="paymentTerms"
           render={(props) => (
             <FormSelect
-              label="Email"
+              label="Payment Terms"
               placeholder="Select Payment Terms"
               options={[
-                { value: "a@example.com", text: "a@example.com" },
-                { value: "b@example.com", text: "b@example.com" },
-                { value: "c@example.com", text: "c@example.com" },
+                { value: "15", text: "Next 15 Days" },
+                { value: "30", text: "Next 30 Days" },
+                { value: "60", text: "Next 60 Days" },
               ]}
               {...props}
             />
@@ -282,8 +267,13 @@ const InvoiceCreate = ({ toggleSheet }) => {
                   />
                 </TableCell>
                 <TableCell className="text-right">
-                  {(itemList[index]?.quantity || 0) *
-                    (itemList[index].price || 0)}
+                  {new Intl.NumberFormat("en-IN", {
+                    currency: "INR",
+                    style: "currency",
+                  }).format(
+                    (itemList[index]?.quantity || 0) *
+                      (itemList[index].price || 0)
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" onClick={() => remove(index)}>

@@ -8,14 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -23,18 +19,15 @@ import {
 import { Mail } from "lucide-react";
 import InvoiceCreate from "../InvoiceCreate";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
+import { useInvoice } from "@/context/invoiceContext";
 
 const InvoiceHeader = () => {
-  const [openSheet, setOpenSheet] = useState(false);
-
-  const toggleSheet = () => setOpenSheet((val) => !val);
-
+  const { openSheet, toggleSheet, invoices } = useInvoice();
   return (
     <div className="flex justify-between container mx-auto items-center">
       <div>
         <h1>Invoices</h1>
-        <p>There are 7 invoices</p>
+        <p>{`There are ${invoices.length} invoices`}</p>
       </div>
       <div className="flex gap-4">
         <Select>
@@ -69,13 +62,7 @@ const InvoiceHeader = () => {
                 </SheetDescription>
               </SheetHeader>
 
-              <InvoiceCreate toggleSheet={toggleSheet} />
-
-              {/* <SheetFooter>
-              <SheetClose asChild>
-                <Button type="submit">Save changes</Button>
-              </SheetClose>
-            </SheetFooter> */}
+              <InvoiceCreate />
             </ScrollArea>
           </SheetContent>
         </Sheet>

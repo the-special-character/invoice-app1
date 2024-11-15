@@ -1,40 +1,75 @@
 {
   "invoices": [
     {
-      "id": "1a75",
+      "id": "a021",
       "billFrom": {
         "address": {
-          "street": "aasdf",
-          "city": "asdfads",
-          "postCode": "asdfasdf",
-          "country": "asdfadsf"
+          "street": "B-605, GANESH GLORY 11, JAGATPUR ROAD, S.G. HIGHWAY",
+          "city": "AHMEDABAD",
+          "postCode": "382470",
+          "country": "India"
         }
       },
       "billTo": {
-        "name": "asdfasd",
-        "email": "asdfasdf@gmail.com",
+        "name": "YAGNESH MODH",
+        "email": "yagnesh.modh@gmail.com",
         "address": {
-          "street": "asdfs",
-          "city": "adsfas",
-          "postCode": "asdfasdf",
-          "country": "asdfasdf"
+          "street": "B-605, GANESH GLORY 11, JAGATPUR ROAD, S.G. HIGHWAY",
+          "city": "AHMEDABAD",
+          "postCode": "382470",
+          "country": "India"
         }
       },
-      "invoiceDate": "2024-11-21T18:30:00.000Z",
-      "paymentTerms": "b@example.com",
+      "invoiceDate": "2024-11-19T18:30:00.000Z",
+      "paymentTerms": "30",
       "projectDescription": "asdfadsfa",
       "itemList": [
         {
-          "itemName": "sdasdfads",
+          "itemName": "sasdfadsf",
           "quantity": 1,
-          "price": 10
+          "price": 20
         },
         {
-          "itemName": "131232131",
+          "itemName": "asdfasdfs",
           "quantity": 2,
-          "price": 10
+          "price": 30
         }
-      ]
+      ],
+      "status": "pending",
+      "total": 80
+    },
+    {
+      "id": "b027",
+      "billFrom": {
+        "address": {
+          "street": "B-605, GANESH GLORY 11,",
+          "city": "AHMEDABAD",
+          "postCode": "382470",
+          "country": "India"
+        }
+      },
+      "billTo": {
+        "name": "YAGNESH MODH",
+        "email": "dsp.ce28@gmail.com",
+        "address": {
+          "street": "B-605, GANESH GLORY 11, JAGATPUR ROAD, S.G. HIGHWAY",
+          "city": "AHMEDABAD",
+          "postCode": "382470",
+          "country": "India"
+        }
+      },
+      "invoiceDate": "2024-11-19T18:30:00.000Z",
+      "paymentTerms": "15",
+      "projectDescription": "dasfadsfasdf",
+      "itemList": [
+        {
+          "itemName": "asfasfadsfasdf",
+          "quantity": 5,
+          "price": 25
+        }
+      ],
+      "status": "pending",
+      "total": 125
     }
   ]
 }
