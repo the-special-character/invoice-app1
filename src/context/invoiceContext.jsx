@@ -15,12 +15,22 @@ export const useInvoice = () => useContext(InvoiceContext);
 export const InvoiceProvider = ({ children }) => {
   const [invoices, setInvoices] = useState([]);
   const [openSheet, setOpenSheet] = useState(false);
+  const [currentInvoice, setCurrentInvoice] = useState(null);
 
-  const toggleSheet = useCallback(() => setOpenSheet((val) => !val), []);
+  const toggleSheet = useCallback(() => {
+    setOpenSheet((val) => {
+      const newVal = !val;
+      if (!newVal) setCurrentInvoice(null);
+      return newVal;
+    });
+  }, []);
 
-  const loadInvoices = useCallback(async () => {
+  const loadInvoices = useCallback(async (filter) => {
     try {
-      const res = await fetch("http://localhost:3000/invoices");
+      console.log(filter);
+      console.log(`http://localhost:3000/invoices${filter || ""}`);
+
+      const res = await fetch(`http://localhost:3000/invoices${filter || ""}`);
       const json = await res.json();
       setInvoices(json);
     } catch (error) {
@@ -37,16 +47,31 @@ export const InvoiceProvider = ({ children }) => {
             return p + c.quantity * c.price;
           }, 0),
         };
+        if (data.id) {
+          const res = await fetch(`http://localhost:3000/invoices/${data.id}`, {
+            method: "PUT",
+            body: JSON.stringify(updatedData),
+            headers: {
+              "content-type": "application/json",
+            },
+          });
+          const json = await res.json();
+          setInvoices((val) => {
+            const index = val.findIndex((x) => x.id === json.id);
+            return [...val.slice(0, index), json, ...val.slice(index + 1)];
+          });
+        } else {
+          const res = await fetch("http://localhost:3000/invoices", {
+            method: "POST",
+            body: JSON.stringify(updatedData),
+            headers: {
+              "content-type": "application/json",
+            },
+          });
+          const json = await res.json();
+          setInvoices((val) => [json, ...val]);
+        }
 
-        const res = await fetch("http://localhost:3000/invoices", {
-          method: "POST",
-          body: JSON.stringify(updatedData),
-          headers: {
-            "content-type": "application/json",
-          },
-        });
-        const json = await res.json();
-        setInvoices((val) => [json, ...val]);
         toggleSheet();
       } catch (error) {
         console.log(error.message);
@@ -63,18 +88,24 @@ export const InvoiceProvider = ({ children }) => {
     () => ({
       invoices,
       openSheet,
+      currentInvoice,
+      loadInvoices,
       createInvoice,
       deleteInvoice,
       updateInvoice,
       toggleSheet,
+      setCurrentInvoice,
     }),
     [
       invoices,
       openSheet,
+      currentInvoice,
+      loadInvoices,
       createInvoice,
       deleteInvoice,
       updateInvoice,
       toggleSheet,
+      setCurrentInvoice,
     ]
   );
 

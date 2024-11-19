@@ -19,6 +19,7 @@ import { Trash } from "lucide-react";
 import { useInvoice } from "@/context/invoiceContext";
 
 const FormSchema = z.object({
+  id: z.string().nullable(),
   billFrom: z.object({
     address: z.object({
       street: z.string().min(1, "Street is required"),
@@ -61,9 +62,11 @@ const FormSchema = z.object({
 });
 
 const InvoiceCreate = () => {
+  const { createInvoice, currentInvoice } = useInvoice();
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
+    defaultValues: currentInvoice || {
       billFrom: {
         address: {
           street: "",
@@ -89,7 +92,6 @@ const InvoiceCreate = () => {
       status: "pending",
     },
   });
-  const { createInvoice } = useInvoice();
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -106,6 +108,24 @@ const InvoiceCreate = () => {
         onSubmit={form.handleSubmit(createInvoice)}
         className="flex flex-col gap-4"
       >
+        {currentInvoice && (
+          <FormField
+            control={form.control}
+            name="status"
+            render={(props) => (
+              <FormSelect
+                label="Change Status"
+                placeholder="Select Status"
+                options={[
+                  { value: "pending", text: "Pending" },
+                  { value: "paid", text: "Paid" },
+                  { value: "draft", text: "Draft" },
+                ]}
+                {...props}
+              />
+            )}
+          />
+        )}
         <FormField
           control={form.control}
           name="billFrom.address.street"

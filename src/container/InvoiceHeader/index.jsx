@@ -22,7 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useInvoice } from "@/context/invoiceContext";
 
 const InvoiceHeader = () => {
-  const { openSheet, toggleSheet, invoices } = useInvoice();
+  const { openSheet, toggleSheet, invoices, loadInvoices } = useInvoice();
   return (
     <div className="flex justify-between container mx-auto items-center">
       <div>
@@ -30,18 +30,25 @@ const InvoiceHeader = () => {
         <p>{`There are ${invoices.length} invoices`}</p>
       </div>
       <div className="flex gap-4">
-        <Select>
+        <Select
+          onValueChange={(value) => {
+            if (value === "all") {
+              loadInvoices();
+            } else {
+              loadInvoices(`?status=${value}`);
+            }
+          }}
+        >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a fruit" />
+            <SelectValue placeholder="Select a Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Fruits</SelectLabel>
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-              <SelectItem value="grapes">Grapes</SelectItem>
-              <SelectItem value="pineapple">Pineapple</SelectItem>
+              <SelectLabel>Status</SelectLabel>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
