@@ -67,6 +67,7 @@ const InvoiceCreate = () => {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: currentInvoice || {
+      id: null,
       billFrom: {
         address: {
           street: "",
@@ -320,6 +321,14 @@ const InvoiceCreate = () => {
           </TableFooter>
         </Table>
 
+        <Button
+          type="button"
+          onClick={() =>
+            createInvoice({ ...form.getValues(), status: "draft" })
+          }
+        >
+          Draft
+        </Button>
         <Button type="submit">Submit</Button>
       </form>
     </Form>

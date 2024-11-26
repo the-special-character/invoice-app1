@@ -24,12 +24,14 @@ function InvoiceTable() {
           >
             <TableCell className="font-medium">{invoice.id}</TableCell>
             <TableCell>
-              {`Due ${format(
-                add(new Date(invoice.invoiceDate), {
-                  days: Number(invoice.paymentTerms),
-                }),
-                "dd LLL yyyy"
-              )}`}
+              {invoice.invoiceDate
+                ? `Due ${format(
+                    add(new Date(invoice.invoiceDate), {
+                      days: Number(invoice.paymentTerms),
+                    }),
+                    "dd LLL yyyy"
+                  )}`
+                : ""}
             </TableCell>
             <TableCell>{invoice.billTo.name}</TableCell>
             <TableCell className="text-right">{invoice.total}</TableCell>

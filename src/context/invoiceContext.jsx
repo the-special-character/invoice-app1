@@ -61,9 +61,10 @@ export const InvoiceProvider = ({ children }) => {
             return [...val.slice(0, index), json, ...val.slice(index + 1)];
           });
         } else {
+          const { id, ...rest } = updatedData;
           const res = await fetch("http://localhost:3000/invoices", {
             method: "POST",
-            body: JSON.stringify(updatedData),
+            body: JSON.stringify(rest),
             headers: {
               "content-type": "application/json",
             },
