@@ -1,14 +1,19 @@
-import InvoiceHeader from "./container/InvoiceHeader";
-import InvoiceTable from "./container/InvoiceTable";
-import { InvoiceProvider } from "./context/invoiceContext";
+import { Linksharing } from "./container/Linksharing";
+// import InvoiceTable from "./container/InvoiceTable";
+// import InvoiceHeader from "./container/InvoiceHeader";
+// import { InvoiceProvider } from "./context/invoiceContext";
+
+// function App() {
+//   return (
+//     <InvoiceProvider>
+//       <InvoiceHeader />
+//       <InvoiceTable />
+//     </InvoiceProvider>
+//   );
+// }
 
 function App() {
-  return (
-    <InvoiceProvider>
-      <InvoiceHeader />
-      <InvoiceTable />
-    </InvoiceProvider>
-  );
+  return <Linksharing />;
 }
 
 export default App;
